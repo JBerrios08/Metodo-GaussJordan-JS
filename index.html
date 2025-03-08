@@ -123,7 +123,8 @@
             fila.className = 'mb-3';  
             for (let j = 0; j < size + 1; j++) {  
                 const input = document.createElement('input');  
-                input.type = 'number';  
+                input.type = 'text';  
+                input.inputMode = 'decimal';  
                 input.className = 'form-control d-inline-block w-auto';  
                 input.style = 'margin-right: 5px';  
                 input.placeholder = `a${i + 1}${j + 1}`;  
