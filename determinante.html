@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔢 Determinante de una Matriz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="bg-dark text-white">
+
+<div class="container mt-5 p-4 rounded-3 bg-secondary">
+    <h2 class="mb-4 text-center">🔢 Determinante de una Matriz</h2>
+
+    <div class="mb-3">
+        <label for="size" class="form-label">📐 Seleccione el tamaño de la matriz:</label>
+        <select class="form-select" id="size" onchange="crearCampos()">
+            <option value="2">2x2</option>
+            <option value="3">3x3</option>
+        </select>
+    </div>
+
+    <div id="inputs"></div>
+
+    <div class="mt-3">
+        <button class="btn btn-primary" onclick="calcularDeterminante()">🧮 Calcular Determinante</button>
+        <button class="btn btn-danger ms-2" onclick="reiniciar()">🔄 Reiniciar</button>
+    </div>
+
+    <h4 class="mt-4">🎉 Resultado:</h4>
+    <div id="resultado" class="alert alert-info" role="alert"></div>
+    <h4 class="mt-4">📜 Procedimiento:</h4>
+    <div id="procedimiento" class="alert alert-light text-dark" role="alert"></div>
+</div>
+
+<footer class="bg-dark text-center text-white py-3 mt-4">
+    <p>Creado por <strong>Jaime Fernando Berrios Ortiz</strong></p>
+</footer>
+
+<script>
+    let entradas = [];
+
+    function calcularDeterminante() {
+        try {
+            const size = parseInt(document.getElementById('size').value);
+            const matriz = [];
+
+            for (let i = 0; i < size; i++) {
+                const fila = [];
+                for (let j = 0; j < size; j++) {
+                    const valor = parseFloat(entradas[i][j].value);
+                    if (isNaN(valor)) {
+                        alert("⚠️ Ingrese valores numéricos válidos.");
+                        return;
+                    }
+                    fila.push(valor);
+                }
+                matriz.push(fila);
+            }
+
+            let determinante;
+            let procedimiento = "<strong>Paso a paso:</strong><br>";
+
+            if (size === 2) {
+                procedimiento += `1️⃣ Multiplicamos los elementos de la diagonal principal: (${matriz[0][0]} × ${matriz[1][1]}) = ${matriz[0][0] * matriz[1][1]}<br>`;
+                procedimiento += `2️⃣ Multiplicamos los elementos de la diagonal secundaria: (${matriz[0][1]} × ${matriz[1][0]}) = ${matriz[0][1] * matriz[1][0]}<br>`;
+                procedimiento += `3️⃣ Restamos los resultados: (${matriz[0][0] * matriz[1][1]}) - (${matriz[0][1] * matriz[1][0]})<br>`;
+                
+                determinante = (matriz[0][0] * matriz[1][1]) - (matriz[0][1] * matriz[1][0]);
+            } 
+            else if (size === 3) {
+                procedimiento += `1️⃣ Descomponemos en cofactores utilizando la primera fila:<br>`;
+                procedimiento += `  ➡️ ${matriz[0][0]} × (determinante de su menor 2x2)<br>`;
+                procedimiento += `  ➡️ ${matriz[0][1]} × (determinante de su menor 2x2, con signo negativo)<br>`;
+                procedimiento += `  ➡️ ${matriz[0][2]} × (determinante de su menor 2x2)<br><br>`;
+
+                let det1 = matriz[1][1] * matriz[2][2] - matriz[1][2] * matriz[2][1];
+                let det2 = matriz[1][0] * matriz[2][2] - matriz[1][2] * matriz[2][0];
+                let det3 = matriz[1][0] * matriz[2][1] - matriz[1][1] * matriz[2][0];
+
+                procedimiento += `2️⃣ Calculamos cada determinante menor:<br>`;
+                procedimiento += `  ➡️ (${matriz[1][1]} × ${matriz[2][2]}) - (${matriz[1][2]} × ${matriz[2][1]}) = ${det1}<br>`;
+                procedimiento += `  ➡️ (${matriz[1][0]} × ${matriz[2][2]}) - (${matriz[1][2]} × ${matriz[2][0]}) = ${det2}<br>`;
+                procedimiento += `  ➡️ (${matriz[1][0]} × ${matriz[2][1]}) - (${matriz[1][1]} × ${matriz[2][0]}) = ${det3}<br><br>`;
+
+                procedimiento += `3️⃣ Aplicamos la regla de Sarrus:<br>`;
+                procedimiento += `Det(A) = (${matriz[0][0]} × ${det1}) - (${matriz[0][1]} × ${det2}) + (${matriz[0][2]} × ${det3})<br>`;
+
+                determinante = matriz[0][0] * det1 - matriz[0][1] * det2 + matriz[0][2] * det3;
+            }
+
+            procedimiento += `<br><strong>✅ Resultado final:</strong> Det(A) = ${determinante}`;
+
+            document.getElementById("resultado").innerHTML = `<strong>Determinante:</strong> ${determinante.toFixed(2)}`;
+            document.getElementById("procedimiento").innerHTML = procedimiento;
+        } catch (e) {
+            alert("⚠️ Hubo un error en el cálculo.");
+            console.error(e);
+        }
+    }
+
+    function crearCampos() {
+        const size = parseInt(document.getElementById('size').value);
+        const inputsDiv = document.getElementById('inputs');
+        inputsDiv.innerHTML = '';
+
+        entradas = [];
+        for (let i = 0; i < size; i++) {
+            const fila = document.createElement('div');
+            fila.className = 'mb-3';
+            for (let j = 0; j < size; j++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.inputMode = 'decimal';
+                input.className = 'form-control d-inline-block w-auto';
+                input.style = 'margin-right: 5px';
+                input.placeholder = `a${i + 1}${j + 1}`;
+                fila.appendChild(input);
+                if (!entradas[i]) entradas[i] = [];
+                entradas[i].push(input);
+            }
+            inputsDiv.appendChild(fila);
+        }
+    }
+
+    function reiniciar() {
+        entradas = [];
+        document.getElementById('inputs').innerHTML = '';
+        document.getElementById('resultado').innerText = '';
+        document.getElementById('procedimiento').innerText = '';
+        document.getElementById('size').value = '2';
+        crearCampos();
+    }
+
+    window.onload = crearCampos;
+</script>
+
+</body>
+</html>
